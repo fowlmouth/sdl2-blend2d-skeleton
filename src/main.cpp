@@ -29,8 +29,11 @@ int main()
     return 1;
   }
 
-  SDL_Surface* image_src = SDL_CreateRGBSurfaceWithFormat(0, screen_w, screen_h, 32, SDL_PIXELFORMAT_ARGB8888);
+  SDL_Texture* image_tex = nullptr;
+
   {
+    SDL_Surface* image_src = SDL_CreateRGBSurfaceWithFormat(0, screen_w, screen_h, 32, SDL_PIXELFORMAT_ARGB8888);
+
     BLImage bl_image;
     bl_image.createFromData(image_src->w, image_src->h, BL_FORMAT_PRGB32, (void*)image_src->pixels, image_src->w * 4);
 
@@ -43,9 +46,11 @@ int main()
 
     ctx.setFillStyle(BLRgba32(0xF0FF0000));
     ctx.fillCircle(100.f, 100.f, 50.f);
-  }
+    ctx.end();
 
-  SDL_Texture* image_tex = SDL_CreateTextureFromSurface(renderer, image_src);
+    image_tex = SDL_CreateTextureFromSurface(renderer, image_src);
+    SDL_FreeSurface(image_src);
+  }
   if(!image_tex)
   {
     std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;
@@ -74,6 +79,8 @@ int main()
 
   std::string input;
   std::getline(std::cin, input);
+
+  SDL_DestroyTexture(image_tex);
 
   return 0;
 }
